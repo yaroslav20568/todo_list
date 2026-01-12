@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/constants/index.dart';
+import 'package:todo_list/screens/index.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,19 +14,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Todo List',
       theme: ThemeData(
-        colorScheme: ColorScheme.light(
-          primary: AppColors.primary,
-          secondary: AppColors.secondary,
-          surface: AppColors.surface,
-          error: AppColors.error,
-          onPrimary: AppColors.onPrimary,
-          onSecondary: AppColors.onSecondary,
-          onSurface: AppColors.onSurface,
-          onError: AppColors.onError,
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
         useMaterial3: true,
       ),
-      home: const Scaffold(body: Center(child: Text('Todo List'))),
+      home: const TodoListScreen(),
     );
   }
 }
