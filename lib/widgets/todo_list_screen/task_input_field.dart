@@ -19,9 +19,7 @@ class TaskInputField extends StatelessWidget {
         controller: controller,
         decoration: InputDecoration(
           hintText: 'Enter task',
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           filled: true,
           fillColor: AppColors.surface,
           isDense: true,

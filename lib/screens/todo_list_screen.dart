@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/constants/index.dart';
 import 'package:todo_list/models/index.dart';
+import 'package:todo_list/services/index.dart';
 import 'package:todo_list/widgets/index.dart';
 
 class TodoListScreen extends StatefulWidget {
@@ -12,7 +13,15 @@ class TodoListScreen extends StatefulWidget {
 
 class _TodoListScreenState extends State<TodoListScreen> {
   final TextEditingController _textController = TextEditingController();
+  final StorageService _storageService = StorageService();
   final List<Task> _tasks = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTasks();
+  }
 
   @override
   void dispose() {
@@ -20,7 +29,20 @@ class _TodoListScreenState extends State<TodoListScreen> {
     super.dispose();
   }
 
-  void _addTask() {
+  Future<void> _loadTasks() async {
+    final tasks = await _storageService.loadTasks();
+    setState(() {
+      _tasks.clear();
+      _tasks.addAll(tasks);
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _saveTasks() async {
+    await _storageService.saveTasks(_tasks);
+  }
+
+  Future<void> _addTask() async {
     final text = _textController.text.trim();
     if (text.isEmpty) return;
 
@@ -36,15 +58,17 @@ class _TodoListScreenState extends State<TodoListScreen> {
     });
 
     _textController.clear();
+    await _saveTasks();
   }
 
-  void _deleteTask(String taskId) {
+  Future<void> _deleteTask(String taskId) async {
     setState(() {
       _tasks.removeWhere((task) => task.id == taskId);
     });
+    await _saveTasks();
   }
 
-  void _changeStatus(String taskId) {
+  Future<void> _changeStatus(String taskId) async {
     setState(() {
       final index = _tasks.indexWhere((task) => task.id == taskId);
       if (index != -1) {
@@ -64,6 +88,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
         _tasks[index] = task.copyWith(status: newStatus);
       }
     });
+    await _saveTasks();
   }
 
   @override
@@ -78,7 +103,9 @@ class _TodoListScreenState extends State<TodoListScreen> {
         children: [
           TaskInputField(controller: _textController, onAdd: _addTask),
           Expanded(
-            child: _tasks.isEmpty
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _tasks.isEmpty
                 ? const EmptyTasksView()
                 : ListView.builder(
                     itemCount: _tasks.length,
