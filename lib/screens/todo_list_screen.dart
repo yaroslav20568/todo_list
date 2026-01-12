@@ -16,6 +16,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
   final StorageService _storageService = StorageService();
   final List<Task> _tasks = [];
   bool _isLoading = true;
+  DateTime? _selectedDateTime;
 
   @override
   void initState() {
@@ -42,6 +43,38 @@ class _TodoListScreenState extends State<TodoListScreen> {
     await _storageService.saveTasks(_tasks);
   }
 
+  Future<void> _selectDateTime() async {
+    if (!mounted) return;
+
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _selectedDateTime ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+
+    if (!mounted || pickedDate == null) return;
+
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: _selectedDateTime != null
+          ? TimeOfDay.fromDateTime(_selectedDateTime!)
+          : TimeOfDay.now(),
+    );
+
+    if (!mounted || pickedTime == null) return;
+
+    setState(() {
+      _selectedDateTime = DateTime(
+        pickedDate.year,
+        pickedDate.month,
+        pickedDate.day,
+        pickedTime.hour,
+        pickedTime.minute,
+      );
+    });
+  }
+
   Future<void> _addTask() async {
     final text = _textController.text.trim();
     if (text.isEmpty) return;
@@ -51,10 +84,12 @@ class _TodoListScreenState extends State<TodoListScreen> {
       title: text,
       status: TaskStatus.pending,
       createdAt: DateTime.now(),
+      scheduledDateTime: _selectedDateTime,
     );
 
     setState(() {
       _tasks.add(newTask);
+      _selectedDateTime = null;
     });
 
     _textController.clear();
@@ -101,7 +136,12 @@ class _TodoListScreenState extends State<TodoListScreen> {
       ),
       body: Column(
         children: [
-          TaskInputField(controller: _textController, onAdd: _addTask),
+          TaskInputField(
+            controller: _textController,
+            onAdd: _addTask,
+            scheduledDateTime: _selectedDateTime,
+            onScheduleTap: _selectDateTime,
+          ),
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())

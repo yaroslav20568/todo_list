@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/constants/index.dart';
 import 'package:todo_list/models/index.dart';
+import 'package:todo_list/utils/index.dart';
 
 class TaskItem extends StatelessWidget {
   final Task task;
@@ -38,7 +39,41 @@ class TaskItem extends StatelessWidget {
                 : null,
           ),
         ),
-        subtitle: Text(task.status.displayName),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(task.status.displayName),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Icon(
+                  task.scheduledDateTime != null
+                      ? Icons.schedule
+                      : Icons.calendar_today,
+                  size: 14,
+                  color: task.scheduledDateTime != null
+                      ? AppColors.primary
+                      : AppColors.onSurface.withValues(alpha: 0.6),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  task.scheduledDateTime != null
+                      ? AppDateUtils.formatDateTime(task.scheduledDateTime!)
+                      : 'Created: ${AppDateUtils.formatDate(task.createdAt)}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: task.scheduledDateTime != null
+                        ? AppColors.primary
+                        : AppColors.onSurface.withValues(alpha: 0.6),
+                    fontWeight: task.scheduledDateTime != null
+                        ? FontWeight.w500
+                        : FontWeight.normal,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
         leading: Container(
           width: 12,
           height: 12,

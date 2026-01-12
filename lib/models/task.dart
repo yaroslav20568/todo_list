@@ -20,12 +20,14 @@ class Task {
   final String title;
   final TaskStatus status;
   final DateTime createdAt;
+  final DateTime? scheduledDateTime;
 
   const Task({
     required this.id,
     required this.title,
     required this.status,
     required this.createdAt,
+    this.scheduledDateTime,
   });
 
   Task copyWith({
@@ -33,12 +35,14 @@ class Task {
     String? title,
     TaskStatus? status,
     DateTime? createdAt,
+    DateTime? scheduledDateTime,
   }) {
     return Task(
       id: id ?? this.id,
       title: title ?? this.title,
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
+      scheduledDateTime: scheduledDateTime ?? this.scheduledDateTime,
     );
   }
 
@@ -48,6 +52,7 @@ class Task {
       'title': title,
       'status': status.name,
       'createdAt': createdAt.toIso8601String(),
+      'scheduledDateTime': scheduledDateTime?.toIso8601String(),
     };
   }
 
@@ -60,6 +65,9 @@ class Task {
         orElse: () => TaskStatus.pending,
       ),
       createdAt: DateTime.parse(json['createdAt'] as String),
+      scheduledDateTime: json['scheduledDateTime'] != null
+          ? DateTime.parse(json['scheduledDateTime'] as String)
+          : null,
     );
   }
 }
