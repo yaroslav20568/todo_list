@@ -49,7 +49,7 @@ class TaskItem extends StatelessWidget {
         ),
         trailing: PopupMenuButton(
           itemBuilder: (context) => [
-            const PopupMenuItem(value: 'delete', child: Text('Удалить')),
+            const PopupMenuItem(value: 'delete', child: Text('Delete')),
           ],
           onSelected: (value) {
             if (value == 'delete') {

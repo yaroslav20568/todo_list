@@ -18,8 +18,10 @@ class TaskInputField extends StatelessWidget {
       child: TextField(
         controller: controller,
         decoration: InputDecoration(
-          hintText: 'Введите задачу',
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          hintText: 'Enter task',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           filled: true,
           fillColor: AppColors.surface,
           isDense: true,

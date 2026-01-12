@@ -8,7 +8,7 @@ class EmptyTasksView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        'Нет задач',
+        'No tasks',
         style: TextStyle(
           color: AppColors.onSurface.withValues(alpha: 0.6),
           fontSize: 16,
