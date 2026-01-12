@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/constants/index.dart';
 import 'package:todo_list/models/index.dart';
+import 'package:todo_list/widgets/index.dart';
 
 class TodoListScreen extends StatefulWidget {
   const TodoListScreen({super.key});
@@ -19,6 +20,52 @@ class _TodoListScreenState extends State<TodoListScreen> {
     super.dispose();
   }
 
+  void _addTask() {
+    final text = _textController.text.trim();
+    if (text.isEmpty) return;
+
+    final newTask = Task(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      title: text,
+      status: TaskStatus.pending,
+      createdAt: DateTime.now(),
+    );
+
+    setState(() {
+      _tasks.add(newTask);
+    });
+
+    _textController.clear();
+  }
+
+  void _deleteTask(String taskId) {
+    setState(() {
+      _tasks.removeWhere((task) => task.id == taskId);
+    });
+  }
+
+  void _changeStatus(String taskId) {
+    setState(() {
+      final index = _tasks.indexWhere((task) => task.id == taskId);
+      if (index != -1) {
+        final task = _tasks[index];
+        TaskStatus newStatus;
+        switch (task.status) {
+          case TaskStatus.pending:
+            newStatus = TaskStatus.inProgress;
+            break;
+          case TaskStatus.inProgress:
+            newStatus = TaskStatus.completed;
+            break;
+          case TaskStatus.completed:
+            newStatus = TaskStatus.pending;
+            break;
+        }
+        _tasks[index] = task.copyWith(status: newStatus);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,95 +76,23 @@ class _TodoListScreenState extends State<TodoListScreen> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _textController,
-              decoration: InputDecoration(
-                hintText: 'Введите задачу',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                filled: true,
-                fillColor: AppColors.surface,
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: () {},
-                ),
-              ),
-              onSubmitted: (_) {},
-            ),
-          ),
+          TaskInputField(controller: _textController, onAdd: _addTask),
           Expanded(
             child: _tasks.isEmpty
-                ? Center(
-                    child: Text(
-                      'Нет задач',
-                      style: TextStyle(
-                        color: AppColors.onSurface.withValues(alpha: 0.6),
-                        fontSize: 16,
-                      ),
-                    ),
-                  )
+                ? const EmptyTasksView()
                 : ListView.builder(
                     itemCount: _tasks.length,
                     itemBuilder: (context, index) {
                       final task = _tasks[index];
-                      return _TaskItem(task: task);
+                      return TaskItem(
+                        task: task,
+                        onDelete: () => _deleteTask(task.id),
+                        onChangeStatus: () => _changeStatus(task.id),
+                      );
                     },
                   ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _TaskItem extends StatelessWidget {
-  final Task task;
-
-  const _TaskItem({required this.task});
-
-  Color _getStatusColor() {
-    switch (task.status) {
-      case TaskStatus.pending:
-        return AppColors.pending;
-      case TaskStatus.inProgress:
-        return AppColors.inProgress;
-      case TaskStatus.completed:
-        return AppColors.completed;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: ListTile(
-        title: Text(
-          task.title,
-          style: TextStyle(
-            decoration: task.status == TaskStatus.completed
-                ? TextDecoration.lineThrough
-                : null,
-          ),
-        ),
-        subtitle: Text(task.status.displayName),
-        leading: Container(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(
-            color: _getStatusColor(),
-            shape: BoxShape.circle,
-          ),
-        ),
-        trailing: PopupMenuButton(
-          itemBuilder: (context) => [
-            const PopupMenuItem(value: 'delete', child: Text('Удалить')),
-          ],
-          onSelected: (_) {},
-        ),
-        onTap: () {},
       ),
     );
   }
