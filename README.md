@@ -6,6 +6,10 @@
 
 Todo List - это мобильное приложение на Flutter для управления задачами. Приложение позволяет пользователям создавать задачи, отслеживать их статус (ожидание, в процессе, выполнено), планировать задачи по дате и времени, а также сохранять все данные локально на устройстве.
 
+# Демонстрация
+
+![Демонстрация работы](video/demo.gif)
+
 ## Что было сделано
 
 - Создана структура проекта с разделением на экраны, виджеты, модели, сервисы, константы и утилиты
@@ -47,6 +51,10 @@ A task management application with date and time scheduling support.
 ## Project Description
 
 Todo List is a Flutter mobile application for task management. The application allows users to create tasks, track their status (pending, in progress, completed), schedule tasks by date and time, and save all data locally on the device.
+
+# Demo
+
+![Demo](video/demo.gif)
 
 ## What Was Done
 
